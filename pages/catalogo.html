@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo — QUEBIATH Boutique</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .catalog-layout { max-width: 1300px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: start; }
+    .sidebar { position: sticky; top: 90px; }
+    .sidebar-section { background: white; border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 2px 16px var(--shadow); }
+    .sidebar-title { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; font-weight: 600; }
+    .sidebar-category { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-bottom: 1px solid var(--beige); cursor: pointer; font-size: 0.88rem; transition: color 0.2s; }
+    .sidebar-category:last-child { border-bottom: none; }
+    .sidebar-category:hover, .sidebar-category.active { color: var(--rose-dark); }
+    .sidebar-category .count { font-size: 0.72rem; color: var(--muted); background: var(--cream); padding: 0.1rem 0.5rem; border-radius: 20px; }
+    .price-range { width: 100%; accent-color: var(--rose); }
+    .price-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+    .color-filter { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .color-filter-btn { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid transparent; cursor: pointer; transition: border-color 0.2s; }
+    .color-filter-btn.active { border-color: var(--charcoal); }
+    .catalog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .catalog-sort { display: flex; align-items: center; gap: 0.8rem; font-size: 0.85rem; }
+    .catalog-sort select { padding: 0.5rem 1rem; border: 1.5px solid var(--beige); border-radius: 8px; font-size: 0.85rem; background: white; color: var(--charcoal); cursor: pointer; }
+    .catalog-count { font-size: 0.85rem; color: var(--muted); }
+    .view-toggle { display: flex; gap: 0.3rem; }
+    .view-btn { width: 34px; height: 34px; border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--beige); background: white; color: var(--muted); cursor: pointer; transition: var(--transition); }
+    .view-btn.active { background: var(--charcoal); border-color: var(--charcoal); color: white; }
+    .catalog-search { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--beige); border-radius: 50px; overflow: hidden; background: white; }
+    .catalog-search input { flex: 1; padding: 0.6rem 1.2rem; border: none; background: transparent; font-size: 0.88rem; outline: none; min-width: 0; }
+    .catalog-search button { padding: 0.6rem 1rem; background: var(--charcoal); color: white; border-radius: 0 50px 50px 0; font-size: 0.85rem; transition: background 0.2s; }
+    .catalog-search button:hover { background: var(--rose-dark); }
+    @media(max-width:900px){ .catalog-layout{ grid-template-columns:1fr; } .sidebar{ position:static; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo">
+    <span class="brand">QUEBIATH</span>
+    <span class="tagline">Boutique · Moda Femenina</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Inicio</a></li>
+    <li><a href="catalogo.html" class="active">Catálogo</a></li>
+    <li><a href="nosotras.html">Nosotras</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+  </ul>
+  <div class="nav-icons">
+    <button class="nav-icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <button class="nav-icon-btn"><i class="fa-regular fa-heart"></i></button>
+    <button class="nav-icon-btn" id="cartBtn">
+      <i class="fa-solid fa-bag-shopping"></i>
+      <span class="cart-count" id="cartCount">3</span>
+    </button>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="nosotras.html">Nosotras</a>
+  <a href="contacto.html">Contacto</a>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Mi Bolsa</h3>
+    <button class="cart-close" onclick="closeCart()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span class="label">Total</span><span class="value" id="cartTotalDisplay">$4,870 MXN</span></div>
+    <a href="checkout.html" class="btn btn-primary btn-full" style="margin-top:1rem;">Finalizar Compra <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+</aside>
+
+<div style="margin-top:72px;">
+  <div class="page-hero">
+    <div class="breadcrumb"><a href="../index.html">Inicio</a><span>/</span><span>Catálogo</span></div>
+    <h1>Nuestra <span style="color:var(--rose);font-style:italic;">Colección</span></h1>
+    <p class="section-desc">Todas las piezas que necesitas para brillar cada día.</p>
+  </div>
+</div>
+
+<div style="background:white;padding:1rem 2rem;border-bottom:1px solid var(--beige);">
+  <div style="max-width:1300px;margin:0 auto;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+    <form class="catalog-search" onsubmit="searchProducts(event)" style="flex:1;min-width:200px;max-width:360px;">
+      <input type="text" id="searchInput" placeholder="Buscar vestidos, blusas..." autocomplete="off">
+      <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <div class="filter-tabs" style="margin:0;gap:0.4rem;">
+      <button class="filter-tab active" data-filter="all">Todo</button>
+      <button class="filter-tab" data-filter="vestidos">Vestidos</button>
+      <button class="filter-tab" data-filter="blusas">Blusas</button>
+      <button class="filter-tab" data-filter="pantalones">Pantalones</button>
+      <button class="filter-tab" data-filter="faldas">Faldas</button>
+      <button class="filter-tab" data-filter="accesorios">Accesorios</button>
+    </div>
+  </div>
+</div>
+
+<div class="catalog-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Categorías</div>
+      <div class="sidebar-category active" onclick="filterCat('all', this)">Todas las piezas <span class="count">525</span></div>
+      <div class="sidebar-category" onclick="filterCat('vestidos', this)">Vestidos <span class="count">87</span></div>
+      <div class="sidebar-category" onclick="filterCat('blusas', this)">Blusas <span class="count">124</span></div>
+      <div class="sidebar-category" onclick="filterCat('pantalones', this)">Pantalones <span class="count">56</span></div>
+      <div class="sidebar-category" onclick="filterCat('faldas', this)">Faldas <span class="count">39</span></div>
+      <div class="sidebar-category" onclick="filterCat('accesorios', this)">Accesorios <span class="count">200+</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Precio</div>
+      <input type="range" min="200" max="6000" value="6000" class="price-range" id="priceRange" oninput="filterPrice(this.value)">
+      <div class="price-labels"><span>$200</span><span id="priceMax">$6,000</span></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Talla</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+        <button class="size-btn">XS</button>
+        <button class="size-btn">S</button>
+        <button class="size-btn">M</button>
+        <button class="size-btn">L</button>
+        <button class="size-btn">XL</button>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Color</div>
+      <div class="color-filter">
+        <div class="color-filter-btn" style="background:#F9F4EF;border:1.5px solid #ddd;" data-color="#F9F4EF" title="Crema"></div>
+        <div class="color-filter-btn" style="background:#F2C9CE;" data-color="#F2C9CE" title="Rosa claro"></div>
+        <div class="color-filter-btn" style="background:#E8929C;" data-color="#E8929C" title="Rosa"></div>
+        <div class="color-filter-btn" style="background:#C9626E;" data-color="#C9626E" title="Rosa oscuro"></div>
+        <div class="color-filter-btn" style="background:#E8D9C8;" data-color="#E8D9C8" title="Beige"></div>
+        <div class="color-filter-btn" style="background:#C9A882;" data-color="#C9A882" title="Camel"></div>
+        <div class="color-filter-btn" style="background:#3A2F2F;" data-color="#3A2F2F" title="Negro"></div>
+        <div class="color-filter-btn" style="background:#FFFFFF;border:1.5px solid #ddd;" data-color="#FFFFFF" title="Blanco"></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Disponibilidad</div>
+      <label style="display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;cursor:pointer;margin-bottom:0.5rem;">
+        <input type="checkbox" checked style="accent-color:var(--rose);" id="inStockFilter"> En existencia
+      </label>
+      <label style="display:flex;align-items:center;gap:0.6rem;font-size:0.88rem;cursor:pointer;">
+        <input type="checkbox" style="accent-color:var(--rose);" id="saleFilter"> En oferta
+      </label>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div>
+    <div class="catalog-header">
+      <span class="catalog-count" id="catalogCount">Mostrando 8 piezas</span>
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+        <div class="catalog-sort">
+          <span style="font-size:0.78rem;color:var(--muted);">Ordenar:</span>
+          <select id="sortSelect" onchange="sortProducts()">
+            <option value="default">Recomendados</option>
+            <option value="price-asc">Precio: Menor a mayor</option>
+            <option value="price-desc">Precio: Mayor a menor</option>
+            <option value="newest">Más nuevos</option>
+            <option value="rating">Mejor valorados</option>
+          </select>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="setView('grid',this)" title="Cuadrícula"><i class="fa-solid fa-grip"></i></button>
+          <button class="view-btn" onclick="setView('list',this)" title="Lista"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="products-grid" id="catalogGrid"></div>
+    <div style="text-align:center;margin-top:3rem;">
+      <button class="btn btn-outline" onclick="showToast('🎀 Cargando más piezas...')">Cargar más <i class="fa-solid fa-arrow-down"></i></button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="brand">QUEBIATH</span>
+      <span class="tagline">Boutique · Moda Femenina</span>
+      <p>By Quebiath Azul Morales Tejeda.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" class="social-btn"><i class="fa-brands fa-pinterest"></i></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Colecciones</h4><ul><li><a href="catalogo.html">Vestidos</a></li><li><a href="catalogo.html">Blusas</a></li><li><a href="catalogo.html">Accesorios</a></li></ul></div>
+    <div class="footer-col"><h4>Ayuda</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Envíos</a></li><li><a href="contacto.html">Contacto</a></li></ul></div>
+    <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacidad</a></li><li><a href="#">Términos</a></li><li><a href="#">SSL</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 QUEBIATH Boutique. By Quebiath Azul Morales Tejeda.</p>
+    <div class="footer-payments">
+      <span class="payment-badge">🔒 SSL</span><span class="payment-badge">Visa</span><span class="payment-badge">MC</span><span class="payment-badge">SET</span>
+    </div>
+  </div>
+</footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+<div class="toast" id="toast"></div>
+
+<script src="../js/data.js"></script>
+<script src="../js/main.js"></script>
+<script>
+  // Estado activo de todos los filtros
+  var activeFilters = {
+    category: 'all',
+    maxPrice: 6000,
+    sizes: [],
+    colors: [],
+    onSale: false
+  };
+
+  // Inicializa listeners y renderizado
+  function initCatalog() {
+    // Tallas
+    document.querySelectorAll('.size-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        this.classList.toggle('active');
+        var size = this.textContent.trim();
+        if (this.classList.contains('active')) {
+          if (!activeFilters.sizes.includes(size)) activeFilters.sizes.push(size);
+        } else {
+          activeFilters.sizes = activeFilters.sizes.filter(function(s){ return s !== size; });
+        }
+        applyFilters();
+      });
+    });
+
+    // Colores
+    document.querySelectorAll('.color-filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        this.classList.toggle('active');
+        var hex = (this.getAttribute('data-color') || '').toUpperCase();
+        if (this.classList.contains('active')) {
+          if (!activeFilters.colors.includes(hex)) activeFilters.colors.push(hex);
+        } else {
+          activeFilters.colors = activeFilters.colors.filter(function(c){ return c !== hex; });
+        }
+        applyFilters();
+      });
+    });
+
+    // Disponibilidad — en oferta
+    var saleChk = document.getElementById('saleFilter');
+    if (saleChk) saleChk.addEventListener('change', function() {
+      activeFilters.onSale = this.checked;
+      applyFilters();
+    });
+
+    // Disponibilidad — en existencia (visual, todos nuestros productos están en stock)
+    var stockChk = document.getElementById('inStockFilter');
+    if (stockChk) stockChk.addEventListener('change', function() {
+      applyFilters();
+    });
+
+    applyFilters();
+  }
+
+  // Función central: aplica todos los filtros activos y renderiza
+  function applyFilters() {
+    var all = DB.query.getAllProducts();
+
+    // 1. Categoría
+    var filtered = activeFilters.category === 'all'
+      ? all
+      : all.filter(function(p){ return p.category === activeFilters.category; });
+
+    // 2. Precio máximo
+    filtered = filtered.filter(function(p){ return p.price <= activeFilters.maxPrice; });
+
+    // 3. Tallas seleccionadas (OR: si el producto tiene al menos una de las tallas activas)
+    if (activeFilters.sizes.length > 0) {
+      filtered = filtered.filter(function(p) {
+        return activeFilters.sizes.some(function(s){ return p.sizes.includes(s); });
+      });
+    }
+
+    // 4. Colores seleccionados (OR: si el producto tiene al menos uno de los colores activos)
+    if (activeFilters.colors.length > 0) {
+      filtered = filtered.filter(function(p) {
+        return activeFilters.colors.some(function(ac) {
+          return p.colors.some(function(pc){ return pc.toUpperCase() === ac; });
+        });
+      });
+    }
+
+    // 5. Solo en oferta
+    if (activeFilters.onSale) {
+      filtered = filtered.filter(function(p){ return p.discount > 0; });
+    }
+
+    // Ordenar según selector
+    var sortVal = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'default';
+    var sorted = filtered.slice();
+    if (sortVal === 'price-asc') sorted.sort(function(a,b){ return a.price - b.price; });
+    else if (sortVal === 'price-desc') sorted.sort(function(a,b){ return b.price - a.price; });
+    else if (sortVal === 'newest') sorted = sorted.filter(function(p){ return p.isNew; }).concat(sorted.filter(function(p){ return !p.isNew; }));
+    else if (sortVal === 'rating') sorted.sort(function(a,b){ return b.rating - a.rating; });
+
+    renderCatalog(sorted);
+  }
+
+  function renderCatalog(products) {
+    var grid = document.getElementById('catalogGrid');
+    document.getElementById('catalogCount').textContent = 'Mostrando ' + products.length + ' piezas';
+    if (products.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--muted);"><div style="font-size:3rem;margin-bottom:1rem;">🔍</div><p>No encontramos piezas con ese criterio.</p><button class="btn btn-rose btn-sm" style="margin-top:1rem;" onclick="resetFilters()">Ver todo</button></div>';
+      return;
+    }
+    grid.innerHTML = products.map(function(p){ return renderProductCard(p, false); }).join('');
+    observeCards();
+  }
+
+  // Filtro por categoría desde sidebar (recibe elemento clicado)
+  function filterCat(cat, el) {
+    activeFilters.category = cat;
+    // Actualiza sidebar
+    document.querySelectorAll('.sidebar-category').forEach(function(e){ e.classList.remove('active'); });
+    if (el) el.classList.add('active');
+    // Sincroniza filter-tabs del top bar
+    document.querySelectorAll('.filter-tab').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-filter') === cat);
+    });
+    applyFilters();
+  }
+
+  // Filtro de precio (slider)
+  function filterPrice(val) {
+    activeFilters.maxPrice = parseInt(val);
+    document.getElementById('priceMax').textContent = '$' + parseInt(val).toLocaleString('es-MX');
+    applyFilters();
+  }
+
+  // Ordenar (llama applyFilters que ya lee el selector)
+  function sortProducts() {
+    applyFilters();
+  }
+
+  // Búsqueda por texto
+  function searchProducts(e) {
+    e.preventDefault();
+    var q = document.getElementById('searchInput').value.trim();
+    if (!q) { resetFilters(); return; }
+    var results = DB.query.search(q);
+    renderCatalog(results);
+  }
+
+  // Vista cuadrícula / lista
+  function setView(mode, btn) {
+    document.querySelectorAll('.view-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var grid = document.getElementById('catalogGrid');
+    grid.style.gridTemplateColumns = mode === 'list' ? '1fr' : '';
+    if (mode === 'list') {
+      grid.style.gap = '1rem';
+    } else {
+      grid.style.gap = '';
+    }
+  }
+
+  // Reiniciar todos los filtros
+  function resetFilters() {
+    activeFilters = { category: 'all', maxPrice: 6000, sizes: [], colors: [], onSale: false };
+    document.querySelectorAll('.sidebar-category').forEach(function(e){ e.classList.remove('active'); });
+    var firstCat = document.querySelector('.sidebar-category');
+    if (firstCat) firstCat.classList.add('active');
+    document.querySelectorAll('.filter-tab').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-filter') === 'all');
+    });
+    document.querySelectorAll('.size-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.color-filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    var saleChk = document.getElementById('saleFilter');
+    if (saleChk) saleChk.checked = false;
+    var priceRange = document.getElementById('priceRange');
+    if (priceRange) priceRange.value = 6000;
+    document.getElementById('priceMax').textContent = '$6,000';
+    applyFilters();
+  }
+
+  function observeCards() {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.product-card').forEach(function(el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      obs.observe(el);
+    });
+  }
+
+  // Filter-tabs del top bar sincronizan con sidebar
+  document.querySelectorAll('.filter-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var cat = this.getAttribute('data-filter');
+      activeFilters.category = cat;
+      document.querySelectorAll('.filter-tab').forEach(function(b){ b.classList.remove('active'); });
+      this.classList.add('active');
+      // Sincronizar sidebar
+      document.querySelectorAll('.sidebar-category').forEach(function(e){
+        var onclick = e.getAttribute('onclick') || '';
+        e.classList.toggle('active', onclick.indexOf("'" + cat + "'") !== -1);
+      });
+      applyFilters();
+    });
+  });
+
+  initCatalog();
+</script>
+</body>
+</html>
